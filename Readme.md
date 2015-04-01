@@ -2,7 +2,8 @@
 
 Quickly and robustly install and cache NW.js.
 
-Installs NW.js just like the [nw](http://npmjs.com/nw) module, but implements resumable, multi-threaded downloads and caching.
+Installs the [nw](http://npmjs.com/nw) module, which 
+in turn installs NW.js. `install-nw` compliments `nw` by implementing resumable, multi-threaded downloads and archive caching.
 
 ## Usage
 
@@ -41,6 +42,12 @@ export NWJS_CACHE=/path/to/cache
 npm install
 ```
 
+This can also be added to an `.npmrc` file:
+
+```
+nwjs_cache=/path/to/cache
+```
+
 See CLI `cache` argument for details
 
 ##### URL Base
@@ -54,7 +61,13 @@ export NWJS_CACHE=http://my.nwjs.repo/v
 npm install
 ```
 
-See CLI `cache` argument for details
+This can also be added to an `.npmrc` file:
+
+```
+nwjs_urlbase=http://my.nwjs.repo/v
+```
+
+See CLI `urlBase` argument for details
 
 
 ### CLI
@@ -112,9 +125,9 @@ install(opts, function (err) {
 });
 ```
 
+## license
+MIT license.
 
+## Kudos
 
-
-
-
-
+Sponsored by nearForm

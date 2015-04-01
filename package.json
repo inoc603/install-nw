@@ -24,5 +24,19 @@
   "bugs": {
     "url": "https://github.com/davidmarkclements/install-nw/issues"
   },
-  "homepage": "https://github.com/davidmarkclements/install-nw"
+  "homepage": "https://github.com/davidmarkclements/install-nw",
+  "keywords": [
+    "nw",
+    "nw.js",
+    "nwjs",
+    "chromium",
+    "io.js",
+    "node-webkit",
+    "webkit",
+    "installer",
+    "install",
+    "iojs",
+    "desktop",
+    "application"
+  ]
 }

@@ -1,9 +1,11 @@
 {
   "name": "install-nw",
   "version": "1.0.0",
-  "description": "",
+  "description": "Quickly and robustly install and cache NW.js.",
   "main": "index.js",
-  "bin": "cmd.js",
+  "bin": {
+    "install-nw": "cmd.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,5 +16,13 @@
     "minimist": "^1.1.1",
     "progress-stream": "^1.1.0",
     "semver": "^4.3.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidmarkclements/install-nw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidmarkclements/install-nw/issues"
+  },
+  "homepage": "https://github.com/davidmarkclements/install-nw"
 }

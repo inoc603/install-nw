@@ -19,7 +19,7 @@ var cache = argv.cache ||
   process.env.NWJS_CACHE ||  
   path.join(homedir, '.nw-cache');
 
-var pack;
+var pack = path.resolve(__dirname, '..', '..', 'package.json');
 
 if (!fs.existsSync(cache)) { 
   fs.mkdirSync(cache); 
@@ -29,9 +29,8 @@ if (argv._.length) {
   return init(argv._[0]);
 }
 
-if (fs.existsSync('../package.json')) {
-  pack = require('../package.json');
-  return init(pack.nw);
+if (fs.existsSync(pack)) {
+  return init(require(pack).nw);
 } 
 
 exec('npm info nw --json', function (err, stdout) {

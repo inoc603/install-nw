@@ -23,6 +23,9 @@ var pack = path.resolve(__dirname, '..', '..', 'package.json');
 var isGlobal = isGlobalInstall();
 var local = !isGlobal && fs.existsSync(pack);
 
+var nwpack;
+var nwp;
+
 if (!fs.existsSync(cache)) { 
   fs.mkdirSync(cache); 
 }
@@ -32,8 +35,31 @@ if (argv._.length) {
 }
 
 if (local) {
+  toggleNwPostinstall()
   return init(require(pack).nw);
-} 
+}
+
+function toggleNwPostinstall() {
+  var nwpack = path.resolve(__dirname, '..', 'nw', 'package.json');
+  if (!fs.existsSync(nwpack)) {return;}
+  var nwp = require(nwpack);
+
+  if (nwp && nwp.scripts) {
+    if (nwp.scripts._postinstall) {
+      nwp.scripts.postinstall = nwp.scripts._postinstall;
+      nwp.scripts._postinstall = undefined;
+      fs.writeFileSync(nwpack, JSON.stringify(nwp, 0, 2));
+      return;
+    }
+    if (nwp.scripts.postinstall) {
+      nwp.scripts._postinstall = nwp.scripts.postinstall;
+      nwp.scripts.postinstall = undefined;
+      fs.writeFileSync(nwpack, JSON.stringify(nwp, 0, 2));
+      return;
+    }
+  }
+
+}
 
 exec('npm info nw --json', function (err, stdout) {
   var info = JSON.parse(stdout);
@@ -70,15 +96,8 @@ function init(version) {
       return process.exit(err.code);
     }
 
-    if (local) { 
-      var nwpack = path.resolve(__dirname, '..', 'nw', 'package.json');
-      var nwp = require(nwpack);
-
-      if (nwp && nwp.scripts) { 
-        nwp.scripts._postinstall = nwp.scripts.postinstall;
-        nwp.scripts.postinstall = null;
-      }
-      fs.writeFileSync(nwpack, nwp);
+    if (local) {
+      toggleNwPostinstall();
     }
 
     process.exit();

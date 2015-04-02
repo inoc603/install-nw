@@ -20,6 +20,8 @@ var cache = argv.cache ||
   path.join(homedir, '.nw-cache');
 
 var pack = path.resolve(__dirname, '..', '..', 'package.json');
+var isGlobal = isGlobalInstall();
+var local = !isGlobal && fs.existsSync(pack);
 
 if (!fs.existsSync(cache)) { 
   fs.mkdirSync(cache); 
@@ -29,7 +31,7 @@ if (argv._.length) {
   return init(argv._[0]);
 }
 
-if (fs.existsSync(pack)) {
+if (local) {
   return init(require(pack).nw);
 } 
 
@@ -57,30 +59,39 @@ function init(version) {
 
   var filePath = path.join(cache, filename);
 
-
-  function isGlobalInstall() { 
-    var conf = process.env.npm_config_argv;
-    return conf && !!~(JSON
-      .parse(conf)
-      .cooked
-      .indexOf('--global'));
-  }
-
-
   install({
     filePath: filePath, 
     url: url,
     version: version,
-    isGlobal: isGlobalInstall()
+    isGlobal: isGlobal
   }, function (err) {
     if (err) { 
-      console.log(err.message); 
+      console.log(err.message);
       return process.exit(err.code);
+    }
+
+    if (local) { 
+      var nwpack = path.resolve(__dirname, '..', 'nw', 'package.json');
+      var nwp = require(nwpack);
+
+      if (nwp && nwp.scripts) { 
+        nwp.scripts._postinstall = nwp.scripts.postinstall;
+        nwp.scripts.postinstall = null;
+      }
+      fs.writeFileSync(nwpack, nwp);
     }
 
     process.exit();
   });
 
+}
+
+function isGlobalInstall() { 
+  var conf = process.env.npm_config_argv;
+  return conf && !!~(JSON
+    .parse(conf)
+    .cooked
+    .indexOf('--global'));
 }
 
 

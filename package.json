@@ -1,6 +1,6 @@
 {
   "name": "install-nw",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Quickly and robustly install and cache NW.js.",
   "main": "index.js",
   "bin": {

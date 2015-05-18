@@ -83,10 +83,9 @@ function init(version) {
     urlBase, version, '/', filename]
     .join('');
 
-  var filePath = path.join(cache, filename);
-
   install({
-    filePath: filePath, 
+    dirPath: cache, 
+    filename: filename,
     url: url,
     version: version,
     isGlobal: isGlobal

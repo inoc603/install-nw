@@ -1,19 +1,57 @@
 var spawn = require('child_process').spawn;  
+var path = require('path');
 var fs = require('fs');
 var http = require('http');
 var Fast = require('fast-download');
 var progress = require('progress-stream');
+var semver = require('semver');
+
+var platform = process.platform === 'darwin' ? 'osx' : 
+  process.platform === 'win3' ? 'win' : process.platform;
+
+var ext = platform === 'linux' ? '.tar.gz' : '.zip';
+
+var homedir = (platform === 'win') ? 
+  process.env.HOMEPATH : 
+  process.env.HOME;
 
 
-module.exports = function (opts, cb) {
+installNw.hasCachedSync = function (version, opts) {
+  opts = opts || {};
+  var dirPath = opts.dirPath || path.join(homedir, '.nw-cache');
+  return fs.existsSync(path.join(dirPath, vToF(version)));
+}
+
+installNw.hasCached = function (version, opts, cb) {
+  if (opts instanceof Function) {
+    cb = opts; 
+    opts = null;
+  }
+
+  opts = opts || {};
+
+  var dirPath = opts.dirPath || path.join(homedir, '.nw-cache');
+
+  fs.exists(path.join(dirPath, vToF(version)), function (exists) {
+    cb(null, exists);
+  });
+}
+
+module.exports = installNw;
+
+function installNw(opts, cb) {
+  opts = opts || {};
   var version = opts.version;
-  var filePath = opts.filePath;
+  var dirPath = opts.dirPath || path.join(homedir, '.nw-cache');
   var url = opts.url;
+  var filename = opts.filename;
   var isGlobal = !!opts.isGlobal;
-
+  var filePath;
   if (!version) { throw 'version required'; }
-  if (!filePath) { throw 'filePath required'; }
+  if (!filename) { throw 'filename required'; }
   if (!url) { throw 'url required'; }
+
+  filePath = path.join(dirPath, filename);
 
   if (!fs.existsSync(filePath)) {
     console.log(version, 
@@ -95,4 +133,29 @@ module.exports = function (opts, cb) {
     })
 
   }
+}
+
+
+
+function vToF(version) {
+  version = down(version);
+  return [
+    'nwjs-v', version, '-',
+    platform, '-', process.arch, 
+    ext].join('');
+}
+
+function down(version) {
+  var v = semver.parse(version);
+  
+  version = [v.major, v.minor, v.patch].join('.');
+  if (v.prerelease && typeof v.prerelease[0] === 'string') {
+    var prerelease = v.prerelease[0].split('-');
+    if (prerelease.length > 1) {
+      prerelease = prerelease.slice(0, -1);
+    }
+    version += '-' + prerelease.join('-');
+  }
+
+  return version;
 }

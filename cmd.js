@@ -10,6 +10,8 @@ var semver = require('semver');
 var platform = process.platform === 'darwin' ? 'osx' : 
   process.platform === 'win3' ? 'win' : process.platform;
 
+var ext = platform === 'linux' ? '.tar.gz' : '.zip';
+
 var homedir = (platform === 'win') ? 
   process.env.HOMEPATH : 
   process.env.HOME;
@@ -77,7 +79,7 @@ function init(version) {
   var filename = [
     'nwjs-v', version, '-',
     platform, '-', process.arch, 
-    '.zip'].join('');
+    ext].join('');
 
   var url = [
     urlBase, version, '/', filename]

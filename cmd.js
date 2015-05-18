@@ -69,7 +69,7 @@ exec('npm info nw --json', function (err, stdout) {
 })
 
 function init(version) { 
-  version = down(version);
+  var v = down(version);
 
   var urlBase = argv.urlBase ||
     process.env.npm_config_nwjs_urlbase || 
@@ -77,19 +77,19 @@ function init(version) {
     'http://dl.nwjs.io/v';
 
   var filename = [
-    'nwjs-v', version, '-',
+    'nwjs-v', v, '-',
     platform, '-', process.arch, 
     ext].join('');
 
   var url = [
-    urlBase, version, '/', filename]
+    urlBase, down(version, true), '/', filename]
     .join('');
 
   install({
     dirPath: cache, 
     filename: filename,
     url: url,
-    version: version,
+    version: v,
     isGlobal: isGlobal
   }, function (err) {
     if (err) { 
@@ -115,7 +115,7 @@ function isGlobalInstall() {
 }
 
 
-function down(version) {
+function down(version, alt) {
   var v = semver.parse(version);
   
   version = [v.major, v.minor, v.patch].join('.');
@@ -124,7 +124,7 @@ function down(version) {
     if (prerelease.length > 1) {
       prerelease = prerelease.slice(0, -1);
     }
-    version += '-' + prerelease.join('-');
+    version += ((alt && v.minor >= 13) ? '/' : '-') + prerelease.join('-');
   }
 
   return version;
